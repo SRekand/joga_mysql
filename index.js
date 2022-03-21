@@ -5,6 +5,7 @@ const app = express()
 const path = require('path')
 // add template engine
 const hbs = require('express-handlebars');
+
 // setup template engine directory and files extensions
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
@@ -13,6 +14,7 @@ app.engine('hbs', hbs.engine({
     defaultLayout: 'main',
     layoutsDir: __dirname +'/views/layouts/',
 }))
+
 // setup static public directory
 app.use(express.static('public'));
 
@@ -40,7 +42,7 @@ app.get('/', (req, res) => {
     let articles = []
     con.query(query, (err, result) => {
         if (err) throw err;
-        articles = result
+        articles = result;
         res.render('index', {
             articles: articles
         })
@@ -56,6 +58,19 @@ app.get('/article/:slug', (req, res) => {
         article = result
         res.render('article', {
             article: article
+        })
+    })
+});
+
+// show article Author by this slug
+app.get('/author/:slug', (req, res) => {
+    let query = `SELECT * FROM author WHERE slug="${req.params.slug}"`
+    let author
+    con.query(query, (err, result) => {
+        if (err) throw err;
+        author = result
+        res.render('author', {
+            author: author
         })
     });
 });
