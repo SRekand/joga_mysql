@@ -36,31 +36,11 @@ con.connect(function (err) {
     console.log("Connected to joga_mysql db");
 })
 
-//show all articles - index page
-app.get('/', (req, res) => {
-    let query = "SELECT * FROM article";
-    let articles = []
-    con.query(query, (err, result) => {
-        if (err) throw err;
-        articles = result;
-        res.render('index', {
-            articles: articles
-        })
-    })
-});
 
-//article controller
-app.get('/article/:slug', (req, res) => {
-    let query = `SELECT *, author.name AS author_name, article.name AS article_name FROM author INNER JOIN article ON author.id = article.author_id WHERE slug="${req.params.slug}"`
-    let article
-    con.query(query, (err,result) => {
-        if (err) throw err;
-        article = result;
-        res.render('article', {
-            article: article
-        });
-    });
-});
+const articleRoutes = require('./routes/article'); // IMPORT ARTICLE ROUTE
+// ARTICLE ROUTES
+app.use('/', articleRoutes)
+app.use('/article', articleRoutes)
 
 
 //author article controller
