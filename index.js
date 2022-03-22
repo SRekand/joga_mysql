@@ -18,6 +18,7 @@ app.engine('hbs', hbs.engine({
 // setup static public directory
 app.use(express.static('public'));
 
+// define MYSQL usage
 const mysql = require('mysql')
 
 const bodyParser = require('body-parser')
@@ -31,38 +32,17 @@ var con = mysql.createConnection({
     database: "joga_mysql"
 })
 
-con.connect(function (err) {
-    if (err) throw err;
-    console.log("Connected to joga_mysql db");
-})
-
-
-const articleRoutes = require('./routes/article'); // IMPORT ARTICLE ROUTE
+// IMPORT ROUTES
+const articleRoutes = require('./routes/article');
+const authorRoutes = require('./routes/author');
 // ARTICLE ROUTES
 app.use('/', articleRoutes)
 app.use('/article', articleRoutes)
+// AUTHOR ROUTES
+app.use('/author', authorRoutes)
 
 
-//author article controller
-app.get('/author/:author_id', (req, res) => {
-    let query1 = `SELECT * FROM article WHERE author_id = "${req.params.author_id}"`;
-    let query2 = `SELECT id, name AS authorName FROM author WHERE id = "${req.params.author_id}"`;
-    let author;
-    let article;
 
-    con.query(query1 , (err,result) => {
-        if (err) throw err;
-        article = result;
-        con.query(query2 , (err,result) => {
-            if (err) throw err;
-            author = result;
-            res.render('author', {
-                author: author,
-                article: article
-            });
-        });
-    });
-});
 
 
 // app start point
