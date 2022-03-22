@@ -49,31 +49,41 @@ app.get('/', (req, res) => {
     })
 });
 
-//show article by this slug
+//article controller
 app.get('/article/:slug', (req, res) => {
-    let query = `SELECT * FROM article WHERE slug="${req.params.slug}"`
+    let query = `SELECT *, author.name AS author_name, article.name AS article_name FROM author INNER JOIN article ON author.id = article.author_id WHERE slug="${req.params.slug}"`
     let article
-    con.query(query, (err, result) => {
+    con.query(query, (err,result) => {
         if (err) throw err;
-        article = result
+        article = result;
         res.render('article', {
             article: article
-        })
-    })
-});
-
-// show article Author by this slug
-app.get('/author/:slug', (req, res) => {
-    let query = `SELECT * FROM author WHERE slug="${req.params.slug}"`
-    let author
-    con.query(query, (err, result) => {
-        if (err) throw err;
-        author = result
-        res.render('author', {
-            author: author
-        })
+        });
     });
 });
+
+
+//author article controller
+app.get('/author/:author_id', (req, res) => {
+    let query1 = `SELECT * FROM article WHERE author_id = "${req.params.author_id}"`;
+    let query2 = `SELECT id, name AS authorName FROM author WHERE id = "${req.params.author_id}"`;
+    let author;
+    let article;
+
+    con.query(query1 , (err,result) => {
+        if (err) throw err;
+        article = result;
+        con.query(query2 , (err,result) => {
+            if (err) throw err;
+            author = result;
+            res.render('author', {
+                author: author,
+                article: article
+            });
+        });
+    });
+});
+
 
 // app start point
 app.listen(3000, () => {
